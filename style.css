@@ -1,0 +1,157 @@
+*{
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.wrapper{
+    height: 500px; 
+    width: 93%; 
+    margin: 50px; 
+    background-color: beige; 
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    
+}
+
+heading{
+    background-color: rgba(195, 106, 92, 0.542); 
+    border: 1px solid orangered;
+    padding: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    letter-spacing: 7px;
+    
+}
+
+
+.dark-mode-button{
+    position: absolute; 
+    top:15px; 
+    right: 50px;
+    padding: 5px ;
+    font-size: 14px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+.dark-mode-button:hover{
+    background-color: #555;
+}
+
+body.dark{
+    background-color: #121212;
+    color: #eaeaea;
+}
+
+.wrapper.dark{
+    background-color: #1e1e1e;
+}
+
+.dark-mode-button.dark{
+    background-color: #eaeaea;
+    color: #333;
+}
+
+.inputs{
+    margin: 10px;
+    padding: 5px;
+}
+
+label{
+    font-size: 25px;
+}
+
+input{
+    padding: 10px;
+    font-size: 20px;
+    margin-right: 30px;
+}
+
+.add{
+    padding: 8px  25px;
+    font-size: 20px;
+    font: 20px;
+    background-color: rgba(224, 56, 56, 0.701);
+    color: beige;
+    border: 2px solid red;
+    border-radius: 30px;
+}
+
+.shopping-log{
+    font-size: 20px;
+    padding: 30px; 
+    /* border: 2px solid purple; */
+    /* height: 100px; */
+    overflow-y: scroll;
+    overflow-x: hiddens;
+}
+
+.box{
+    padding: 12px 25px;
+    margin-bottom: 13px; 
+    background-color: rgba(238, 182, 191, 0.521);
+    border-radius: 20px;
+    /* border:2px solid pink */
+}
+
+.price-section{
+    position: absolute;
+    bottom: 100px;
+    right: 150px;
+    padding: 10px  50px;
+    background-color: rgb(125 105 108 / 52%);
+    font-size: 20px;
+    border-radius: 40px;
+}
+
+.total-price{
+    background-color: white;
+    padding: 5px 30px;
+    margin-left: 10px;
+    border-radius: 40px;
+    color: black !important;
+}
+
+.date-heading{
+    color: red;
+    font-size: 25px;
+}
+
+li{
+    margin: 20px 10px;
+}
+
+.display{
+    background: white;
+    padding: 5px 30px;
+    border-radius: 40px;
+    color: black !important
+}
+
+.edit-button{
+    margin-left: 45px;
+    background-color: rgba(131, 204, 131, 0.63);
+}
+
+.remove-button{
+    background-color: rgb(218 117 117 / 81%);
+}
+
+.button{
+    padding: 5px 15px;
+    font-size: 20px;
+    border-radius: 40px;
+    border: none;
+    /* margin-left: 10px; */
+}
