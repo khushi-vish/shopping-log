@@ -28,6 +28,13 @@ body {
   flex-direction: column;
 }
 
+@media (max-width: 450px) {
+  .wrapper {
+    margin: 50px 0;
+    width: 98%;
+  }
+}
+
 heading {
   padding: 20px;
 
@@ -40,6 +47,12 @@ heading {
   justify-content: center;
   align-items: flex-start;
   letter-spacing: 7px;
+}
+
+@media (max-width: 770px) {
+  heading {
+    font-size: 2.5rem;
+  }
 }
 
 @media (max-width: 685px) {
@@ -102,15 +115,46 @@ body.dark {
 .inputs {
   margin: 10px;
   padding: 5px;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
 }
 
 @media (max-width: 990px) {
   .inputs {
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
+  }
+}
+
+@media (max-width: 377px) {
+  .inputs {
+    margin-left: 0px !important;
+  }
+
+  label,
+  .add,
+  .date-heading,
+  .name-display,
+  .price-display,
+  .edit-button,
+  .remove-button {
+    font-size: 15px !important;
+  }
+
+  .box ul {
+    padding: 0;
+  }
+
+  .name-display,
+  .price-display,
+  .edit-button,
+  .remove-button {
+    width: 70px;
+  }
+
+  .shopping-log {
+    padding: 0 !important;
   }
 }
 
@@ -123,7 +167,7 @@ input {
   font-size: 15px;
   margin-right: 15px;
   width: auto;
-  border: none;
+  border: 1px solid black;
   border-radius: 5px;
 }
 
@@ -185,11 +229,20 @@ input {
   /* height: 100px; */
   overflow-y: scroll;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media (max-width: 990px) {
   .shopping-log {
     height: 266px;
+  }
+}
+
+@media (max-width: 743px) {
+  .shopping-log {
+    height: 200px;
   }
 }
 
@@ -256,12 +309,12 @@ li {
   /* margin-left: 10px; */
 }
 
-@media (max-width: 375px) {
+/* @media (max-width: 375px) {
   .box ul li {
     display: flex;
     flex-direction: column;
   }
-}
+} */
 
 #reset {
   color: beige;
@@ -277,4 +330,12 @@ li {
   top: 9px;
   margin-left: 6px;
   color: rgb(67, 224, 67);
+}
+
+@media (max-width: 540px) {
+  #reset {
+    padding: 2px 0;
+    bottom: 75px;
+    right: 60px;
+  }
 }
