@@ -2,164 +2,201 @@ const darkModeButton = document.querySelector(".dark-mode-button");
 const body = document.body;
 const wrapper = document.querySelector(".wrapper");
 
+// Load dark mode state from local storage
+if (localStorage.getItem("darkMode") === "enabled") {
+  body.classList.add("dark");
+  wrapper.classList.add("dark");
+  darkModeButton.textContent = "Light mode";
+}
 
+// Toggle dark mode and save state
+darkModeButton.addEventListener("click", () => {
+  body.classList.toggle("dark");
+  wrapper.classList.toggle("dark");
 
-darkModeButton.addEventListener("click", ()=>{
-    body.classList.toggle('dark');
-    wrapper.classList.toggle('dark');
-
-
-    if(body.classList.contains('dark')){
-        darkModeButton.textContent = 'Light mode';
-    }else{
-        darkModeButton.textContent = 'dark mode';
-    }
+  if (body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "enabled");
+    darkModeButton.textContent = "Light mode";
+  } else {
+    localStorage.setItem("darkMode", "disabled");
+    darkModeButton.textContent = "Dark mode";
+  }
 });
 
 // -----------------------------------------------------------
 // Object to keep track of boxes by date
-let dateBoxMap = {};
+let dateBoxMap = JSON.parse(localStorage.getItem("shoppingLog")) || {};
 
-// Event listener for the Add button
-document.querySelector('.add').addEventListener('click', function () {
-    let name = document.querySelector('#name').value;
-    let price = document.querySelector('#price').value;
-    let date = document.querySelector('#date').value;
-
-    if (name && price && date) {
-        price = parseFloat(price); // Ensure price is treated as a number
-
-        // Check if the box for this date already exists
-        if (!dateBoxMap[date]) {
-            // Create a new box for this date if it doesn't exist
-            const newBox = document.createElement('div');
-            newBox.classList.add('box');
-
-            const dateHeading = document.createElement('div');
-            dateHeading.classList.add('date-heading');
-            dateHeading.textContent = date;
-
-            const ul = document.createElement('ul');
-            const li = createListItem(name, price); // Create a new list item
-
-            ul.appendChild(li);
-
-            newBox.appendChild(dateHeading);
-            newBox.appendChild(ul);
-
-            // Append the new box to the shopping log
-            document.querySelector('.shopping-log').appendChild(newBox);
-
-            // Store this date's box in the dateBoxMap and initialize total for this date
-            dateBoxMap[date] = {
-                box: newBox,
-                total: price,
-            };
-        } else {
-            // If the box for this date already exists, append to the existing list
-            const existingBox = dateBoxMap[date].box;
-            const ul = existingBox.querySelector('ul');
-            const li = createListItem(name, price);
-
-            ul.appendChild(li);
-
-            // Update the total for this date
-            dateBoxMap[date].total += price;
-        }
-
-        // Update the total price displayed in the price-section
-        updateTotalPrice();
-
-        // Reset input fields
-        document.querySelector('#name').value = '';
-        document.querySelector('#price').value = '';
-        document.querySelector('#date').value = '';
-    } else {
-        alert('Please fill in all fields');
-    }
+// Render saved shopping log
+document.addEventListener("DOMContentLoaded", () => {
+  for (const date in dateBoxMap) {
+    renderBox(date, dateBoxMap[date].items, dateBoxMap[date].total);
+  }
+  updateTotalPrice();
 });
 
-// Function to create a list item with edit and remove buttons
-function createListItem(name, price) {
-    const li = document.createElement('li');
+// Event listener for the Add button
+document.querySelector(".add").addEventListener("click", function () {
+  let name = document.querySelector("#name").value;
+  let price = document.querySelector("#price").value;
+  let date = document.querySelector("#date").value;
 
-    const nameDisplay = document.createElement('span');
-    nameDisplay.classList.add('display', 'name-display');
-    nameDisplay.textContent = name;
+  if (name && price && date) {
+    price = parseFloat(price);
 
-    const priceDisplay = document.createElement('span');
-    priceDisplay.classList.add('display', 'price-display');
-    priceDisplay.textContent = price;
-
-    const editButton = document.createElement('button');
-    editButton.classList.add('button', 'edit-button');
-    editButton.textContent = 'edit';
-
-    const removeButton = document.createElement('button');
-    removeButton.classList.add('button', 'remove-button');
-    removeButton.textContent = 'remove';
-
-    // Add event listeners for edit and remove
-    editButton.addEventListener('click', function () {
-        editItem(li, nameDisplay, priceDisplay);
-    });
-    removeButton.addEventListener('click', function () {
-        removeItem(li, price);
-    });
-
-    li.appendChild(nameDisplay);
-    li.appendChild(document.createTextNode(' = '));
-    li.appendChild(priceDisplay);
-    li.appendChild(editButton);
-    li.appendChild(removeButton);
-
-    return li;
-}
-
-// Function to handle item editing
-function editItem(li, nameDisplay, priceDisplay) {
-    const newName = prompt('Enter new name:', nameDisplay.textContent);
-    const newPrice = parseFloat(prompt('Enter new price:', priceDisplay.textContent));
-
-    if (newName && !isNaN(newPrice)) {
-        const oldPrice = parseFloat(priceDisplay.textContent);
-        const date = li.closest('.box').querySelector('.date-heading').textContent;
-
-        nameDisplay.textContent = newName;
-        priceDisplay.textContent = newPrice;
-
-        // Update the total for this date
-        dateBoxMap[date].total = dateBoxMap[date].total - oldPrice + newPrice;
-
-        // Update the total price displayed in the price-section
-        updateTotalPrice();
-    } else {
-        alert('Invalid input. Please try again.');
+    if (!dateBoxMap[date]) {
+      dateBoxMap[date] = { items: [], total: 0 };
     }
+
+    dateBoxMap[date].items.push({ name, price });
+    dateBoxMap[date].total += price;
+
+    saveToLocalStorage();
+    renderBox(date, dateBoxMap[date].items, dateBoxMap[date].total);
+
+    document.querySelector("#name").value = "";
+    document.querySelector("#price").value = "";
+    document.querySelector("#date").value = "";
+  } else {
+    alert("Please fill in all fields");
+  }
+});
+
+// Function to render a date box
+function renderBox(date, items, total) {
+  let existingBox = document.querySelector(`.box[data-date="${date}"]`);
+
+  if (!existingBox) {
+    const newBox = document.createElement("div");
+    newBox.classList.add("box");
+    newBox.setAttribute("data-date", date);
+
+    const dateHeading = document.createElement("div");
+    dateHeading.classList.add("date-heading");
+    dateHeading.textContent = date;
+
+    const ul = document.createElement("ul");
+
+    newBox.appendChild(dateHeading);
+    newBox.appendChild(ul);
+    document.querySelector(".shopping-log").appendChild(newBox);
+
+    existingBox = newBox;
+  }
+
+  const ul = existingBox.querySelector("ul");
+  ul.innerHTML = "";
+  items.forEach((item) => {
+    ul.appendChild(createListItem(item.name, item.price, date));
+  });
+
+  updateTotalPrice();
 }
 
-// Function to handle item removal
-function removeItem(li, price) {
-    const date = li.closest('.box').querySelector('.date-heading').textContent;
+// Function to create a list item
+function createListItem(name, price, date) {
+  const li = document.createElement("li");
 
-    li.remove(); // Remove the item from the list
+  const nameDisplay = document.createElement("span");
+  nameDisplay.classList.add("display", "name-display");
+  nameDisplay.textContent = name;
 
-    // Update the total for this date
-    dateBoxMap[date].total -= price;
+  const priceDisplay = document.createElement("span");
+  priceDisplay.classList.add("display", "price-display");
+  priceDisplay.textContent = price;
 
-    // Update the total price displayed in the price-section
+  const editButton = document.createElement("button");
+  editButton.classList.add("button", "edit-button");
+  editButton.textContent = "edit";
+
+  const removeButton = document.createElement("button");
+  removeButton.classList.add("button", "remove-button");
+  removeButton.textContent = "remove";
+
+  editButton.addEventListener("click", function () {
+    editItem(name, price, date, li, nameDisplay, priceDisplay);
+  });
+
+  removeButton.addEventListener("click", function () {
+    removeItem(name, price, date, li);
+  });
+
+  li.appendChild(nameDisplay);
+  li.appendChild(document.createTextNode(" = "));
+  li.appendChild(priceDisplay);
+
+  li.appendChild(editButton);
+  li.appendChild(removeButton);
+
+  return li;
+}
+
+// Function to edit an item
+function editItem(oldName, oldPrice, date, li, nameDisplay, priceDisplay) {
+  const newName = prompt("Enter new name:", oldName);
+  const newPrice = parseFloat(prompt("Enter new price:", oldPrice));
+
+  if (newName && !isNaN(newPrice)) {
+    nameDisplay.textContent = newName;
+    priceDisplay.textContent = newPrice + "₹";
+
+    let item = dateBoxMap[date].items.find(
+      (item) => item.name === oldName && item.price == oldPrice
+    );
+    if (item) {
+      item.name = newName;
+      item.price = newPrice;
+    }
+
+    dateBoxMap[date].total = dateBoxMap[date].items.reduce(
+      (sum, item) => sum + item.price,
+      0
+    );
+    saveToLocalStorage();
     updateTotalPrice();
+  } else {
+    alert("Invalid input. Please try again.");
+  }
 }
 
-// Function to update the total price displayed
+// Function to remove an item
+function removeItem(name, price, date, li) {
+  dateBoxMap[date].items = dateBoxMap[date].items.filter(
+    (item) => !(item.name === name && item.price == price)
+  );
+  dateBoxMap[date].total -= price;
+
+  if (dateBoxMap[date].items.length === 0) {
+    delete dateBoxMap[date];
+    document.querySelector(`.box[data-date="${date}"]`).remove();
+  } else {
+    saveToLocalStorage();
+    updateTotalPrice();
+  }
+
+  li.remove();
+}
+
+// Function to update total price
 function updateTotalPrice() {
-    let totalPrice = 0;
-
-    // Calculate the sum of all date totals
-    for (const date in dateBoxMap) {
-        totalPrice += dateBoxMap[date].total;
-    }
-
-    // Update the total price in the price-section
-    document.querySelector('.total-price').textContent = totalPrice.toFixed(2); // Format to 2 decimal places
+  let totalPrice = Object.values(dateBoxMap).reduce(
+    (sum, entry) => sum + entry.total,
+    0
+  );
+  document.querySelector(".total-price").textContent = totalPrice.toFixed(2);
+  saveToLocalStorage();
 }
+
+// Save data to local storage
+function saveToLocalStorage() {
+  localStorage.setItem("shoppingLog", JSON.stringify(dateBoxMap));
+}
+
+// ================================
+
+document.querySelector(".reset").addEventListener("click", function () {
+  document.querySelector(".shopping-log").innerHTML = "";
+  dateBoxMap = {};
+  localStorage.removeItem("shoppingLog");
+  updateTotalPrice();
+});
