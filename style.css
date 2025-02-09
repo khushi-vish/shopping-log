@@ -1,8 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Delius&display=swap");
-
 * {
   box-sizing: border-box;
-  font-family: cursive, "Delius", serif;
+  font-family: cursive, "Delius", "Caveat", serif;
 }
 
 body {
